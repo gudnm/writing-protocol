@@ -49,12 +49,14 @@
 
         // Function to restrict editing to the current word
         const writingArea = document.getElementById('writingArea');
+        let lastLength = 0;
+
         writingArea.addEventListener('input', (e) => {
-            const words = writingArea.value.split(' ');
-            if (words.length > 1) {
-                const lastWord = words[words.length - 1];
-                writingArea.value = words.slice(0, -1).join(' ') + ' ' + lastWord;
+            const currentLength = writingArea.value.length;
+            if (currentLength < lastLength) {
+                writingArea.value = writingArea.value.slice(0, lastLength);
             }
+            lastLength = writingArea.value.length;
         });
     </script>
 </body>
