@@ -10,12 +10,26 @@
             background-color: #333;
             color: #fff;
         }
-        #writingArea {
+        #displayArea {
+            height: 1.5em;
             width: 100%;
-            height: 80vh;
+            max-height: 70vh;
             background-color: #222;
             color: #fff;
             border: none;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        #inputArea {
+            width: 100%;
+            height: 1.5em;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            padding: 10px;
         }
         #timer {
             position: fixed;
@@ -26,10 +40,11 @@
 </head>
 <body>
     <div id="timer">15:00</div>
-    <textarea id="writingArea" placeholder="Start writing here..."></textarea>
+    <div id="displayArea" contenteditable="false"></div>
+    <div id="inputArea" contenteditable="true" placeholder="Type a word..."></div>
     <script>
         const timerElement = document.getElementById('timer');
-        let time = 900; // 15 minutes in seconds
+        let time = 15 * 60; // 15 minutes in seconds
 
         // Update the timer every second
         const updateTimer = () => {
@@ -41,23 +56,35 @@
             if (time < 0) {
                 clearInterval(timerInterval);
                 // Optional: Disable the textarea when time is up
-                // document.getElementById('writingArea').disabled = true;
+                // document.getElementById('inputArea').disabled = true;
             }
         };
-
         const timerInterval = setInterval(updateTimer, 1000);
 
-        // Function to restrict editing to the current word
-        const writingArea = document.getElementById('writingArea');
-        let lastLength = 0;
+        const inputArea = document.getElementById('inputArea');
+        const displayArea = document.getElementById('displayArea');
 
-        writingArea.addEventListener('input', (e) => {
-            const currentLength = writingArea.value.length;
-            if (currentLength < lastLength) {
-                writingArea.value = writingArea.value.slice(0, lastLength);
+        inputArea.addEventListener('keydown', (event) => {
+            if (/[.,!?;:\s]/.test(event.key) || event.key === 'Enter') {
+                var key = event.key;
+                if (event.key === 'Enter') {
+                  key = '\n';
+                }
+                displayArea.textContent += inputArea.textContent.trim() + key;
+                inputArea.textContent = '';
+                event.preventDefault();
+		updateDisplayAreaHeight(); // Update height after adding text
             }
-            lastLength = writingArea.value.length;
         });
+
+	const updateDisplayAreaHeight = () => {
+	    displayArea.style.height = 'auto'; // Reset height to auto to get the natural height
+	    displayArea.style.height = displayArea.scrollHeight + 'px'; // Set the height to scrollHeight
+	};
+	
+        window.onload = function() {
+	    document.getElementById('inputArea').focus();
+	};
     </script>
 </body>
 </html>
