@@ -4,15 +4,58 @@
     <meta charset="UTF-8">
     <title>Simple Writing App</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        #writingArea { width: 100%; height: 80vh; }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+        #writingArea {
+            width: 100%;
+            height: 80vh;
+            background-color: #222;
+            color: #fff;
+            border: none;
+        }
+        #timer {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+        }
     </style>
 </head>
 <body>
-    <h1>Simple Writing App</h1>
+    <div id="timer">15:00</div>
     <textarea id="writingArea" placeholder="Start writing here..."></textarea>
     <script>
-        // JavaScript can be added here if needed
+        const timerElement = document.getElementById('timer');
+        let time = 900; // 15 minutes in seconds
+
+        // Update the timer every second
+        const updateTimer = () => {
+            const minutes = Math.floor(time / 60);
+            const seconds = time % 60;
+            timerElement.textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+            time--;
+
+            if (time < 0) {
+                clearInterval(timerInterval);
+                // Optional: Disable the textarea when time is up
+                // document.getElementById('writingArea').disabled = true;
+            }
+        };
+
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Function to restrict editing to the current word
+        const writingArea = document.getElementById('writingArea');
+        writingArea.addEventListener('input', (e) => {
+            const words = writingArea.value.split(' ');
+            if (words.length > 1) {
+                const lastWord = words[words.length - 1];
+                writingArea.value = words.slice(0, -1).join(' ') + ' ' + lastWord;
+            }
+        });
     </script>
 </body>
 </html>
